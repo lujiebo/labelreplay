@@ -1,0 +1,194 @@
+<mvc:View xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:mvc="sap.ui.core.mvc" xmlns:plugins="sap.m.plugins"
+	xmlns:smartFilterBar="sap.ui.comp.smartfilterbar" xmlns:smartTable="sap.ui.comp.smarttable" xmlns:f="sap.f" xmlns:t="sap.ui.table"
+	xmlns:fb="sap.ui.comp.filterbar" xmlns:l="sap.ui.layout" controllerName="com.shunyu.labelreplay.controller.maintag" height="100%">
+	<Page>
+		<f:DynamicPage headerExpanded="true">
+		
+			<!--第一个主体 标题 查询条件-->
+			<f:title>
+				<f:DynamicPageTitle>
+					<f:heading>
+						<Title text="{i18n>HUSearchCondition}"/>
+					</f:heading>
+					<f:snappedContent>
+						<Text id="statusText"></Text>
+					</f:snappedContent>
+				</f:DynamicPageTitle>
+			</f:title>
+			
+			<!--各查询条件输入选择框-->
+			<f:header>
+				<f:DynamicPageHeader >
+					<f:content>
+						<fb:FilterBar reset="onReset" clear="onClear" search="onSearch" useToolbar="false" showRestoreButton="false" showClearButton="true"
+							showGoOnFB="true" showFilterConfiguration="false" id="tagfilter" assignedFiltersChanged="onAssignedFiltersChanged">
+							<fb:filterItems>
+								<!--HU号-->
+								<fb:FilterItem name="HUCode" label="{i18n>HUCode}">
+									<fb:control>
+										<Input
+										id="HUInput"
+										type="Text"
+										value="{searchModel>/HUCode}"
+										showValueHelp="true"
+										valueHelpOnly="false"
+										valueHelpRequest="HUHandleValueHelp"
+										width="15rem"
+										class="sapUiSmallMarginBottom"/>
+									</fb:control>
+								</fb:FilterItem>
+								
+								<!--物料编号-->
+								<fb:FilterItem name="materialCode" label="{i18n>materialCode}" >
+									<fb:control>
+										<Input
+										id="materialInput"
+										type="Text"
+										value="{searchModel>/materialCode}"
+										showValueHelp="true"
+										valueHelpOnly="false"
+										valueHelpRequest="materialHandleValueHelp"
+										width="15rem"
+										class="sapUiSmallMarginBottom"/>
+									</fb:control>
+								</fb:FilterItem>
+								
+								<!--客户料号-->
+								<fb:FilterItem name="customerMaterialCode" label="{i18n>customerMaterialCode}">
+									<fb:control>
+										<Input id="customerMaterialCode" value="{searchModel>/customerMaterialCode}" width="20rem">
+										<layoutData>
+												<l:GridData span="XL4 L4 M4 S4"/>
+											</layoutData>
+										</Input>
+									</fb:control>
+								</fb:FilterItem>
+								
+								<!--批次-->
+								<fb:FilterItem name="batch" label="{i18n>batch}">
+									<fb:control>
+										<Input id="batch" value="{searchModel>/batch}" width="20rem">
+										<layoutData>
+												<l:GridData span="XL4 L4 M4 S4"/>
+											</layoutData>
+										</Input>
+									</fb:control>
+								</fb:FilterItem>
+								
+								<!--客户编号-->
+								<fb:FilterItem name="customerCode" label="{i18n>customerCode}">
+									<fb:control>
+										<!--<ComboBox xmlns="sap.m" items="{checkmodel>/checkstatus}" maxWidth="100%" selectedKey="{searchModel>/customerCode}" id="customerCode">
+											<layoutData>
+												<l:GridData span="XL2 L2 M2 S2"/>
+											</layoutData>
+											<core:Item key="{checkmodel>cstatus}" text="{checkmodel>cstatus}"/>
+										</ComboBox>-->
+										<Input
+										id="customerInput"
+										type="Text"
+										value="{searchModel>/customerCode}"
+										showValueHelp="true"
+										valueHelpOnly="false"
+										valueHelpRequest="customerHandleValueHelp"
+										width="15rem"
+										class="sapUiSmallMarginBottom"/>
+									</fb:control>
+								</fb:FilterItem>
+								
+								<!--日期开始-->
+								<fb:FilterItem name="dateStart" label="{i18n>dateStart}" class="datepos">
+									<fb:control>
+										<DatePicker id="datePickerfrom" value="{searchModel>/dateStart}" valueFormat="yyyy-MM-dd" displayFormat="long" required="true">
+											<layoutData>
+												<l:GridData span="XL4 L4 M4 S4"/>
+											</layoutData>
+										</DatePicker>
+									</fb:control>
+								</fb:FilterItem>
+							
+								<!--日期结束-->
+								<fb:FilterItem name="dateEnd" label="{i18n>dateEnd}">
+									<fb:control>
+										<DatePicker id="datePickerto" value="{searchModel>/dateEnd}" valueFormat="yyyy-MM-dd" displayFormat="long" required="true">
+											<layoutData>
+												<l:GridData span="XL4 L4 M4 S4"/>
+											</layoutData>
+										</DatePicker>
+									</fb:control>
+								</fb:FilterItem>
+								
+							</fb:filterItems>
+						</fb:FilterBar>
+					</f:content>
+				</f:DynamicPageHeader>
+			</f:header>
+			
+			<!--第二块主体-->
+			<f:content>
+				<Table id="tagTable" 
+				items="{ path: 'filterModel>/' ,sorter: { path: 'Exidv', descending: true }}" 
+				mode="MultiSelect"
+				sticky="HeaderToolbar,ColumnHeaders,InfoToolbar"
+				growing="true"
+				growingScrollToLoad="true"
+				>
+					<!--标题-->
+					<headerToolbar>
+						<Toolbar>
+							<Title text="{i18n>HUSearchList}"/>
+						</Toolbar>
+					</headerToolbar>
+					
+					<!--按钮-->
+					<infoToolbar>
+						<OverflowToolbar design="Solid" height="2.5rem" class="toolbarstyle">
+							<Button type="Emphasized" text="{i18n>confirm}" visible="true" press="printLabelTag" />
+						</OverflowToolbar>
+					</infoToolbar>
+					
+					<!--数据展示table 标题-->
+					<columns>
+						<Column  hAlign="Center" width="8rem">
+							<Text text="{i18n>HUCode}"/>
+						</Column>
+						<Column  demandPopin="true" hAlign="Center">
+							<Text text="{i18n>materialCode}"/>
+						</Column>
+						<Column demandPopin="true" hAlign="Center">
+							<Text text="{i18n>materialName}"/>
+						</Column>
+						<Column  demandPopin="true" hAlign="Center">
+							<Text text="{i18n>customerMaterialCode}"/>
+						</Column>
+						<Column demandPopin="true" hAlign="Center">
+							<Text text="{i18n>customerCode}"/>
+						</Column>
+						<Column  demandPopin="true" hAlign="Center">
+							<Text text="{i18n>HUCount}"/>
+						</Column>
+						<Column  demandPopin="true" hAlign="Center">
+							<Text text="{i18n>batch}"/>
+						</Column>
+					</columns>
+					
+					<!--数据展示区-->
+					<items >
+						<ColumnListItem vAlign="Middle">
+							<cells>
+								<Text text="{filterModel>Exidv}"/>
+								<Text text="{filterModel>Matnr}"/>
+								<Text text="{filterModel>Maktx}"/>
+								<Text text="{filterModel>Cmatnr}"/>
+								<Text text="{filterModel>Customerid}"/>
+								<Text text="{filterModel>Vemng}"/>
+								<Text text="{filterModel>Charg}"/>
+								<!--<Text text="{path:'filterModel>Zdate',type:'sap.ui.model.type.DateTime', formatOptions: {UTC:true, pattern: 'yyyy-MM-dd', strictParsing: true}}"/>-->
+							</cells>
+						</ColumnListItem>
+					</items>
+				</Table>
+			</f:content>
+		</f:DynamicPage>
+	</Page>
+</mvc:View>
